@@ -1,0 +1,44 @@
+.grid_product, .grid_seller{
+  @include rounded-all;
+  border: 1px solid gray;
+  padding: 5px;
+  float: left;
+  width: 260px;
+  height: 130px;
+  div.half_first_floater {
+    float: left;
+    width: 100px;
+  }
+  div.half_second_floater {
+    float:left;
+    width: 145px;
+    padding-left: 5px;
+  }
+  div.image {
+    img {
+      max-width: 50px;
+      max-height: 50px;
+    }
+  }
+}
+
+.grid_seller {
+  div.half_first_floater {
+    div.name {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+  }
+}
+
+.want_this_link {
+  @include rounded-all(30px, 0, 30px, 0);
+  @include gradient(#FF9359, #E5E5E5);
+  @include box-shadow(0 1px 3px rgba(0,0,0,0.40) inset, 0 1px 0 0px #FFF);
+  border: 1px double gray;
+  display: block;
+  padding: 5px;
+  img {
+    vertical-align:middle;
+  }
+}
