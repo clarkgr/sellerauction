@@ -21,6 +21,15 @@ ActiveAdmin.register Seller do
     end
   end
   
+  form do |f|
+    f.inputs "Details: #{resource.name}" do
+      f.input :name
+      f.input :password
+      f.input :password_confirmation
+    end
+    f.buttons
+  end
+  
   controller do
     load_and_authorize_resource :except => :index
       def scoped_collection

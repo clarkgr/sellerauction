@@ -27,6 +27,23 @@ ActiveAdmin.register Product do
     end
   end
   
+  show :title => lambda { |_| resource.name } do
+    attributes_table_for resource do
+      row :image do
+        span do image_tag resource.image, :height => 200, :style => "vertical-align:middle;" end
+        span do 
+          link_to "#{image_tag("want_this.png")} I want this!".html_safe,
+                  new_interest_path(:product_id => product.id), :class => "want_this_link"
+        end
+      end
+      row :description
+    end
+    table_for resource.stocks.order(:price) do
+      column :seller
+      column :price
+    end
+  end
+  
   form do |f|
     f.inputs do
       f.input :category

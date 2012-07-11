@@ -14,8 +14,8 @@ development:
   reconnect: false
   database: sellerauction_development
   pool: 5
-  username: root
-  password:
+  username: devuser
+  password: devpass
   host: localhost
 
 # Warning: The database defined as "test" will be erased and
