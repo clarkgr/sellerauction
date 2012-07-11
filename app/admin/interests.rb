@@ -3,17 +3,24 @@ ActiveAdmin.register Interest do
   form do |f|
     f.inputs "Interest details" do
       f.input :start_price
+      f.input :decrements
+      f.input :expires_at, :as => :datepicker
     end
+    f.inputs "Progess" do
+      f.input :current_price, :input_html => {:disabled => true}
+      f.input :seller, :as => :string, :input_html => {:disabled => true}
+    end if f.object.persisted?
+    f.buttons
   end
   
-  sidebar "Product image", :only => [:new, :edit] do
-    div do image_tag resource.product.image, :height => 200, :style => "vertical-align:middle;" end
-    div do truncate resource.product.description, :length => 80, :separator => " " end
-    div do link_to "More", resource.product end
+  sidebar "Product image", :only => [:new, :edit, :create, :update] do
+    div do image_tag @product.image, :height => 200, :style => "vertical-align:middle;" end
+    div do truncate @product.description, :length => 80, :separator => " " end
+    div do link_to "More", @product end
   end
     
-  sidebar "Product details", :only => [:new, :edit] do
-    table_for resource.product.stocks.order(:price) do
+  sidebar "Product details", :only => [:new, :edit, :create, :update] do
+    table_for @product.stocks.order(:price) do
       column :seller
       column :price
     end
@@ -22,9 +29,19 @@ ActiveAdmin.register Interest do
   controller do
     
     def new
-      new! do
-        resource.product_id = params[:product_id]
-      end
+      new!
+      @product = Product.find_by_id params[:product_id]
+      logger.debug @product.inspect
+    end
+    
+    def create
+      @product = Product.find_by_id params[:product_id]
+      create!
+    end
+    
+    def update
+      @product = Product.find_by_id params[:product_id]
+      update!
     end
     
   end
