@@ -45,3 +45,12 @@
     vertical-align:middle;
   }
 }
+
+ul.errors {
+  li {
+    text-transform: capitalize;
+    color: #932419;
+    font-weight: bold;
+    margin: 0.3em 0 0 20%;
+  }
+}

@@ -7,4 +7,9 @@ class Product < ActiveRecord::Base
   attr_accessible :code, :name, :description, :category, :category_id, :image, :image_cache
   
   mount_uploader :image, ImageUploader
+  
+  def min_available_price
+    stocks.minimum(:price)
+  end
+  
 end

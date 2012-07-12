@@ -1,0 +1,23 @@
+<% columns ||= [:id, :product, :price, :paid_at] %>
+<div class="panel_contents">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <thead>
+      <tr>
+        <% columns.each do |col| %>
+          <th class="<%= col %>"><%= col.to_s.titleize %></th>
+        <% end %>
+      </tr>
+      <tr/>
+    </thead>
+    <tbody>
+      <% orders.each do |order| %>
+        <tr class="<%= cycle "odd", "even" %>" id="stock_<%= order.id %>">
+          <% columns do |col| %>
+            <td class="<%= da %>">order.col</td>
+          <% end %>
+          <td><%= link_to "Details", order %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

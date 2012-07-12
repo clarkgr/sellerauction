@@ -8,15 +8,20 @@ class Ability
     if user.type.blank?
       can :manage, :all
     else
-      can :read, :all
+      can :read, [Product, Seller, Stock]
       if user.type == "Seller"
-        can :manage, Stock, :seller_id => user.id
-        can :manage, Seller, :id => user.id
-        cannot :destroy, Seller
-        cannot :read, Category
+        can :manage,      Stock     , :seller_id => user.id
+        can :create,      Stock
+        can :manage,      Seller    , :id => user.id
+        cannot :destroy,  Seller
+        can :read,        Interest  , :product_id => user.product_ids
+        can :manage,      Bid       , :seller_id => user.id
+        can :create,      Bid
       end
+      can :manage,        Interest  , :user_id => user.id
+      can :create,        Interest
     end
-    #
+
     # The first argument to `can` is the action you are giving the user permission to do.
     # If you pass :manage it will apply to every action. Other common actions here are
     # :read, :create, :update and :destroy.

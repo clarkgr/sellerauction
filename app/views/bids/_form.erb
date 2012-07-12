@@ -1,0 +1,12 @@
+<%= semantic_form_for resource do |f| %>
+  <%= f.inputs "You are biding for product #{f.object.product.name} for user #{f.object.user.name}" do %>
+    <%= f.input :interest_id, :as => :hidden %>
+    <%= f.semantic_errors :interest_id %>
+    <%= f.input :min_price, :max => f.object.interest.current_price %>
+  <% end %>
+  <%= f.buttons %>
+  <%= f.inputs "See previous orders for this buyer" do %> 
+    <%= render :partial => "orders/index", :locals => {:orders => past_orders} %>
+  <% end %>
+<% end %>
+
