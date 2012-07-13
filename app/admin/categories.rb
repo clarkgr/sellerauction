@@ -1,6 +1,6 @@
 ActiveAdmin.register Category do
   
-  menu :if => Proc.new{ |_| current_user.type.blank? }
+  menu :if => Proc.new{ |_| can? :read, Category }
   
   controller do
     load_and_authorize_resource :except => :index

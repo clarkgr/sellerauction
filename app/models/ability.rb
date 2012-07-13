@@ -17,9 +17,16 @@ class Ability
         can :read,        Interest  , :product_id => user.product_ids
         can :manage,      Bid       , :seller_id => user.id
         can :create,      Bid
+        can :read,        Order     , :seller_id => user.id
+        can :update,      Order     , :seller_id => user.id
       end
-      can :manage,        Interest  , :user_id => user.id
-      can :create,        Interest
+      if user.type == "Buyer"
+        can :manage,      Interest  , :user_id => user.id
+        can :create,      Interest
+        can :read,        Bid       , :interest_id => user.interest_ids
+        can :read,        Order     , :user_id => user.id
+        can :create,      Order 
+      end
     end
 
     # The first argument to `can` is the action you are giving the user permission to do.

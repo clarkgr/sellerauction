@@ -1,5 +1,7 @@
 ActiveAdmin.register Bid do
   
+  menu :if => Proc.new{ |_| current_user.type == "Seller" }
+  
   index do
     column :product
     column :user
@@ -9,17 +11,37 @@ ActiveAdmin.register Bid do
     end
   end
   
+  show :title => lambda { |x| "Bid for product: #{resource.interest.product.name}" } do
+    panel "Details" do
+      attributes_table_for resource do
+        row :min_price
+      end
+    end
+    panel "Status" do
+      div :class => "bid_status" do
+        if resource.min_price <= resource.interest.current_price
+          span :class => "win" do "You are winning this offer!" end
+        else
+          span :class => "lose" do "You are NOT winning this offer!" end
+        end
+      end
+    end
+  end
+  
   form :partial => "form.erb"
   
-  sidebar "Product details", :only => [:new, :edit, :create, :update] do
+  sidebar "Product details", :only => [:show, :new, :edit, :create, :update] do
     div do image_tag resource.product.image, :height => 200, :style => "vertical-align:middle;" end
     div do truncate resource.product.description, :length => 80, :separator => " " end
     div do link_to "More", resource.product end
   end
   
-  sidebar "Bids", :only => [:new, :edit, :create, :update] do
+  sidebar "Bids", :only => [:show, :new, :edit, :create, :update] do
     attributes_table_for resource.interest do
       row :current_price
+      row :buyer_max_buying_price do
+        resource.interest.max_buying_price
+      end
       row :total_bidders do
         resource.interest.bids.count
       end

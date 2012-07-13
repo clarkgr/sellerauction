@@ -7,7 +7,7 @@ ActiveAdmin.register Seller do
     div :class => "grid_seller" do
       div :class => "half_first_floater" do
         # div :class => "image" do image_tag seller.image_url(:thumb) end
-        div :class => "name"  do link_to seller.name, edit_resource_path(seller) end
+        div :class => "name"  do link_to seller.name, can?(:update, seller) ? edit_resource_path(seller) : resource_path(seller) end
       end
     end
   end

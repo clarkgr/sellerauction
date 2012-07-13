@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(:version => 20120712115336) do
     t.integer  "user_id"
     t.integer  "product_id"
     t.datetime "expires_at"
-    t.float    "start_price"
+    t.float    "max_buying_price"
     t.float    "current_price"
     t.integer  "decrements"
     t.integer  "seller_id"

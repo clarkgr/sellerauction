@@ -6,6 +6,8 @@ ActiveAdmin.register Product do
   filter "stocks_price_gt", :as => :number, :label => "Search minimum price"
   filter "stocks_price_lt", :as => :number, :label => "Search maximum price"
   
+  config.clear_action_items!
+  
   index :as => :grid do |product|
     div :class => "grid_product" do
       div :class => "half_first_floater" do

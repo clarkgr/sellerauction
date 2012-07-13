@@ -9,7 +9,8 @@ class Bid < ActiveRecord::Base
   has_one :product, :through => :interest
   has_one :user, :through => :interest
   
-  validates :min_price, :presence => true, :numericality => {:less_than => lambda { |x| x.interest.current_price }}
+  validates :min_price, :presence => true,
+            :numericality => {:less_than => lambda { |x| [x.interest.current_price, x.interest.max_buying_price].min }}
   validates :interest_id, :uniqueness => {:scope => :seller_id, :message => "! You have already placed a bid for this !" }
   
   def update_interest_current_price

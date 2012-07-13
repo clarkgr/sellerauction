@@ -4,6 +4,8 @@ class CreateUsers < ActiveRecord::Migration
       ## Database authenticatable
       t.string :name
       t.string :email,              :null => false, :default => ""
+      t.string :avatar
+      t.string :address
       t.string :encrypted_password, :null => false, :default => ""
 
       ## Recoverable

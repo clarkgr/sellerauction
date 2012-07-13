@@ -1,50 +1,84 @@
 ActiveAdmin.register Interest do
   
   filter "product_name", :as => :string
-  filter :start_price
+  filter :max_buying_price
   filter :current_price
-  filter :seller
   filter :expires_at
-  filter :updated_at
   
-  action_item :only => [:index] do
-    link_to "View as #{params[:as_seller].blank? ? "seller" : "buyer"}", {:as_seller => params[:as_seller].blank? ? 1 : nil}
+  config.clear_action_items!
+  
+  action_item :only => [:show, :edit] do
+    link_to "Edit", edit_resource_path
+  end
+
+  action_item :only => [:show, :edit] do
+    link_to "Delete", resource_path, :method => :delete, :confirm => "Are you sure?"
   end
   
   index do
-    column :user if !params[:as_seller].blank?
+    column :user if current_user.type == "Seller"
     column :product
-    column :start_price
+    column :max_buying_price
     column :current_price
-    column :seller
     column :expires_at
-    column :updated_at if params[:as_seller].blank?
     column do |interest|
-      link_to "Place bid!", new_bid_path(:interest_id => interest.id)
-    end if !params[:as_seller].blank?
+      if current_user.type == "Seller"
+        bid = current_user.bids.where{interest_id == my{interest.id}}.first
+        if bid.nil?
+          link_to "Place bid!", new_bid_path(:interest_id => interest.id)
+        else
+          link_to "Details", bid_path(bid)
+        end
+      else
+        html = ""
+        html << link_to("Details", resource_path(interest))
+        html << "<br/>" << link_to("Place order", new_order_path(:interest_id => interest.id)) if interest.won?
+        html.html_safe
+      end
+    end 
+  end
+  
+  show :title => lambda { |x| "Interest details for #{x.product.name}" } do
+    panel "Details" do
+      attributes_table_for resource do
+        row :expires_at
+        row :max_buying_price
+        row :decrements
+        row :current_price
+      end
+    end
+    panel "Bids" do
+      attributes_table_for resource do
+        row :total_bids do
+          resource.bids.count
+        end
+        row :bidders do
+          resource.bids.includes{seller}.map{ |b| link_to b.seller.name, b.seller }.join(", ").html_safe
+        end
+      end
+    end
   end
   
   form do |f|
     f.inputs "Interest details" do
       f.input :product_id, :as => :hidden, :input_html => {:value => f.object.product_id || params[:product_id]}
-      f.input :start_price, :max => f.object.product.min_available_price
+      f.input :max_buying_price, :max => f.object.product.min_available_price
       f.input :decrements
       f.input :expires_at, :as => :datepicker
     end
     f.inputs "Progess" do
       f.input :current_price, :input_html => {:disabled => true}
-      f.input :seller, :as => :string, :input_html => {:disabled => true}
     end if f.object.persisted?
     f.buttons
   end
   
-  sidebar "Product image", :only => [:new, :edit, :create, :update] do
+  sidebar "Product image", :only => [:new, :show, :edit, :create, :update] do
     div do image_tag resource.product.image, :height => 200, :style => "vertical-align:middle;" end
     div do truncate resource.product.description, :length => 80, :separator => " " end
     div do link_to "More", resource.product end
   end
     
-  sidebar "Product details", :only => [:new, :edit, :create, :update] do
+  sidebar "Product details", :only => [:new, :show, :edit, :create, :update] do
     table_for resource.product.stocks.order(:price) do
       column :seller
       column :price
@@ -57,7 +91,7 @@ ActiveAdmin.register Interest do
     def new
       redirect_to products_url, :alert => "Select a product first!" and return if params[:product_id].blank?
       new! do
-        @interest.product_id = params[:product_id]
+        resource.product_id = params[:product_id]
       end
     end
     
@@ -72,12 +106,11 @@ ActiveAdmin.register Interest do
     end
     
     def scoped_collection
-      collection = end_of_association_chain.accessible_by(current_ability).includes(:product, :seller)
-      if params[:as_seller].blank?
+      collection = end_of_association_chain.accessible_by(current_ability).includes(:product)
+      if current_user.type == "Buyer"
         collection = collection.where(:user_id => current_user.id)
-      else
-        visible_product_ids = current_user.type == "Seller" ? current_user.product_ids : []
-        collection = collection.where(:product_id => visible_product_ids)
+      elsif current_user.type == "Seller"
+        collection = collection.where(:product_id => current_user.product_ids)
       end
       collection
     end
