@@ -18,4 +18,8 @@ class Bid < ActiveRecord::Base
     true
   end
   
+  def winning?
+    min_price <= interest.current_price
+  end
+  
 end

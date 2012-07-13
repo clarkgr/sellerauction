@@ -12,4 +12,8 @@ class Product < ActiveRecord::Base
     stocks.minimum(:price)
   end
   
+  def price_for(seller)
+    stocks.where{seller_id == seller.id}.first.try(:price)
+  end
+  
 end

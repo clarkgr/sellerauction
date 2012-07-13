@@ -9,6 +9,12 @@ ActiveAdmin.register Bid do
     column :current_price do |bid|
       bid.interest.current_price
     end
+    column :winning? do |bid|
+      status_tag bid.winning? ? "YES" : "NO", bid.winning? ? "ok" : "error"
+    end
+    column :originally_sold do |bid|
+      bid.interest.product.price_for(current_user)
+    end
   end
   
   show :title => lambda { |x| "Bid for product: #{resource.interest.product.name}" } do
@@ -19,7 +25,7 @@ ActiveAdmin.register Bid do
     end
     panel "Status" do
       div :class => "bid_status" do
-        if resource.min_price <= resource.interest.current_price
+        if resource.winning?
           span :class => "win" do "You are winning this offer!" end
         else
           span :class => "lose" do "You are NOT winning this offer!" end
