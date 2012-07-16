@@ -35,11 +35,10 @@ ActiveAdmin.register Product do
         end
         div :class => "start" do
           if current_user.type == "Buyer"
-            link_to "#{image_tag("want_this.png")} I want this!".html_safe,
-                    new_interest_path(:product_id => product.id), :class => "mybutton want_this_link"
+            link_to "I want this!", new_interest_path(:product_id => product.id), :class => "mybutton want_this_link"
           elsif current_user.type == "Seller"
             if stock = current_user.has_product?(product)
-              link_to "Edit price", edit_stock_path(stock), :class => "mybutton"
+              link_to "Edit price and/or quantity", edit_stock_path(stock), :class => "mybutton"
             else
               link_to "Sell this!", new_stock_path(:product_id => product.id), :class => "mybutton"
             end
@@ -59,6 +58,9 @@ ActiveAdmin.register Product do
         end if can?(:create, Interest)
       end
       row :description
+      row "In stock" do
+        current_user.has_product?(product).quantity if current_user.has_product?(product)
+      end if current_user.type == "Seller"
     end
     table_for resource.stocks.order(:price) do
       column :seller

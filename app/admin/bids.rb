@@ -50,6 +50,17 @@ ActiveAdmin.register Bid do
         end
       end
     end
+    panel "Order details" do
+      if resource.interest.order
+        link_to "Go to order", resource_path(resource.interest.order)
+      else
+        if current_user.type == "Buyer"
+          link_to "Place order", new_order_path(:interest_id => resource.interest)
+        elsif current_user.type == "Seller"
+          "No order has been placed yet!"
+        end
+      end
+    end
   end
   
   form :partial => "form.erb"

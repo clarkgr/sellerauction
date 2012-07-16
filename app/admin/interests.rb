@@ -44,6 +44,7 @@ ActiveAdmin.register Interest do
         row :expires_at
         row :max_buying_price
         row :decrements
+        row :quantity
         row :current_price
       end
     end
@@ -57,6 +58,21 @@ ActiveAdmin.register Interest do
         end
       end
     end
+    panel "Order details" do
+      if resource.expired?
+        if resource.order
+          link_to "Go to order", resource_path(resource.order)
+        else
+          if current_user.type == "Buyer"
+            link_to "Place order", new_order_path(:interest_id => resource)
+          elsif current_user.type == "Seller"
+            "No order has been placed yet!"
+          end
+        end
+      else
+        "This interest has not expired yet! You will be able to place an order and see details after the interest expires!"
+      end
+    end
   end
   
   form do |f|
@@ -64,6 +80,7 @@ ActiveAdmin.register Interest do
       f.input :product_id, :as => :hidden, :input_html => {:value => f.object.product_id || params[:product_id]}
       f.input :max_buying_price, :max => f.object.product.min_available_price
       f.input :decrements
+      f.input :quantity
       f.input :expires_at, :as => :timepicker, :input_html => {:value => I18n.l(f.object.expires_at || Date.tomorrow, :format => '%Y-%m-%d %H:%M')}
     end
     f.inputs "Progess" do

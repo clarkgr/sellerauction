@@ -33,6 +33,13 @@ ActiveAdmin.register Seller do
   controller do
     load_and_authorize_resource :except => :index
     
+    def update
+      params[:seller].delete(:password) && params[:seller].delete(:password_confirmation) if params[:seller] && params[:seller][:password].blank?
+      update!
+    end
+    
+    protected 
+    
     def scoped_collection
       end_of_association_chain.accessible_by(current_ability)
     end

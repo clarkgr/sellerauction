@@ -23,8 +23,11 @@ class Ability
         can :manage,      Interest  , :user_id => user.id
         can :create,      Interest
         can :read,        Bid       , :interest_id => user.interest_ids
-        can :read,        Order     , :user_id => user.id
-        can :create,      Order 
+        can :manage,      Order     , :user_id => user.id
+        can :create,      Order
+        cannot :destroy,  Order     do |order|
+          !order.paid_at.blank?
+        end
       end
       can :manage,        User      , :id => user.id
     end

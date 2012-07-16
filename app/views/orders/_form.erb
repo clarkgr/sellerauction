@@ -1,0 +1,14 @@
+<%= semantic_form_for resource do |f| %>
+  <%= f.inputs "Order details" do %>
+    <%= f.semantic_errors %>
+    <%= f.input :seller_id, :as => :select, :collection => f.object.interest.winning_sellers,
+                :include_blank => f.object.interest.winning_sellers.length > 1, :input_html => {:disabled => f.object.persisted?},
+                :hint => f.object.interest.winning_sellers.length > 1 ?
+                  "There are more than one sellers that offered the selected product at the same price. Select the one you want to order from." : "" %>
+    <%= f.input :interest_id, :as => :hidden %>
+    <%= f.input :price, :input_html => {:readonly => true} %>
+    <%= f.input :paid_at, :as => :string, :input_html => {:class => "timepicker"} if current_user.type == "Seller" %>
+    <%= f.input :shipped_at, :as => :string, :input_html => {:class => "timepicker"} if current_user.type == "Seller" %>
+  <% end %>
+  <%= f.buttons %>
+<% end %>

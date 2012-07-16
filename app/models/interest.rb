@@ -1,5 +1,5 @@
 class Interest < ActiveRecord::Base
-  attr_accessible :product_id, :max_buying_price, :decrements, :expires_at
+  attr_accessible :product_id, :max_buying_price, :decrements, :quantity, :expires_at
   
   before_save :update_current_price
   
@@ -24,6 +24,14 @@ class Interest < ActiveRecord::Base
   
   def won?
     current_price <= max_buying_price && expires_at.past?
+  end
+  
+  def winning_sellers
+    if expired?
+      bids.where{min_price <= my{current_price}}.map(&:seller)
+    else
+      []
+    end
   end
   
   def update_current_price
