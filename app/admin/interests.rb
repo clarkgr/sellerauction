@@ -64,7 +64,7 @@ ActiveAdmin.register Interest do
       f.input :product_id, :as => :hidden, :input_html => {:value => f.object.product_id || params[:product_id]}
       f.input :max_buying_price, :max => f.object.product.min_available_price
       f.input :decrements
-      f.input :expires_at, :as => :datepicker
+      f.input :expires_at, :as => :timepicker, :input_html => {:value => I18n.l(f.object.expires_at || Date.tomorrow, :format => '%Y-%m-%d %H:%M')}
     end
     f.inputs "Progess" do
       f.input :current_price, :input_html => {:disabled => true}

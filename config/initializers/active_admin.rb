@@ -1,3 +1,24 @@
+module ActiveAdmin
+  module Devise
+    class RegistrationsController < ::Devise::RegistrationsController
+      include ::ActiveAdmin::Devise::Controller
+    end
+  end
+end
+
+module ActiveAdmin
+  module Inputs
+    class TimepickerInput < ::Formtastic::Inputs::StringInput
+      def input_html_options
+        options = super
+        options[:class] = [options[:class], "timepicker"].compact.join(' ')
+        options
+      end
+    end
+  end
+end
+
+
 ActiveAdmin.setup do |config|
 
   # == Site Title

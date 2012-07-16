@@ -1,6 +1,7 @@
 class Product < ActiveRecord::Base
   
   belongs_to :category
+  has_many :interests
   has_many :stocks
   has_many :sellers, :through => :stocks
   
