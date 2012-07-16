@@ -6,14 +6,13 @@ class Ability
     #
     user ||= User.new # guest user (not logged in)
     if user.type.blank?
-      can :manage, :all
+      can :manage, Product
+      can :manage, Category
     else
-      can :read, [Product, Seller, Stock]
+      can :read, [Product, Seller]
       if user.type == "Seller"
         can :manage,      Stock     , :seller_id => user.id
         can :create,      Stock
-        can :manage,      Seller    , :id => user.id
-        cannot :destroy,  Seller
         can :read,        Interest  , :product_id => user.product_ids
         can :manage,      Bid       , :seller_id => user.id
         can :create,      Bid
@@ -27,6 +26,7 @@ class Ability
         can :read,        Order     , :user_id => user.id
         can :create,      Order 
       end
+      can :manage,        User      , :id => user.id
     end
 
     # The first argument to `can` is the action you are giving the user permission to do.

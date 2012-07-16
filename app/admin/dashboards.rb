@@ -1,5 +1,18 @@
 ActiveAdmin::Dashboards.build do
 
+  section "Profile" do
+    div do
+      "Welcome, #{current_user.name_or_email}"
+    end
+    div do
+      if current_user.is_a?(Seller)
+        link_to "Edit your info", edit_seller_path(current_user)
+      elsif current_user.is_a?(Buyer)
+        link_to "Edit your info", edit_buyer_path(current_user)
+      end
+    end
+  end
+
   # Define your dashboard sections here. Each block will be
   # rendered on the dashboard in the context of the view. So just
   # return the content which you would like to display.

@@ -1,5 +1,5 @@
 class Stock < ActiveRecord::Base
-  attr_accessible :price, :quantity
+  attr_accessible :price, :quantity, :product_id
   
   belongs_to :seller
   belongs_to :product

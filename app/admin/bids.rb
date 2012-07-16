@@ -15,6 +15,9 @@ ActiveAdmin.register Bid do
     column :originally_sold do |bid|
       bid.interest.product.price_for(current_user)
     end
+    column do |bid|
+      link_to "Details", resource_path(bid)
+    end
   end
   
   show :title => lambda { |x| "Bid for product: #{resource.interest.product.name}" } do
@@ -24,11 +27,26 @@ ActiveAdmin.register Bid do
       end
     end
     panel "Status" do
+      div :class => "bid_status", :style => "color: black;margin-bottom:10px;" do
+        "This bid is for user #{bid.interest.user.name}"
+      end
+      div :class => "bid_status", :style => "color: black;margin-bottom:10px;" do
+        bid.expired? ? "This bid expired" :
+          "This bid expires in #{time_ago_in_words(bid.expires_at)} (#{I18n.l bid.expires_at, :format => '%Y-%m-%d %H:%M'})"
+      end
       div :class => "bid_status" do
-        if resource.winning?
-          span :class => "win" do "You are winning this offer!" end
+        if bid.expired?
+          if resource.winning?
+            span :class => "win" do "You WON this offer!" end
+          else
+            span :class => "lose" do "You LOST this offer!" end
+          end
         else
-          span :class => "lose" do "You are NOT winning this offer!" end
+          if resource.winning?
+            span :class => "win" do "You are winning this offer!" end
+          else
+            span :class => "lose" do "You are NOT winning this offer!" end
+          end
         end
       end
     end

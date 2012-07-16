@@ -8,6 +8,18 @@ ActiveAdmin.register Product do
   
   config.clear_action_items!
   
+  action_item do
+    link_to "New product", new_resource_path if current_user.type.blank?
+  end
+  
+  action_item :only => [:show, :edit, :create, :update] do
+    link_to "Edit product", edit_resource_path if current_user.type.blank?
+  end
+  
+  action_item :only => [:show, :edit, :create, :update] do
+    link_to "Delete product", resource_path if current_user.type.blank?
+  end
+  
   index :as => :grid do |product|
     div :class => "grid_product" do
       div :class => "half_first_floater" do
@@ -22,8 +34,16 @@ ActiveAdmin.register Product do
           "From: #{number_to_currency product.min_price}"
         end
         div :class => "start" do
-          link_to "#{image_tag("want_this.png")} I want this!".html_safe,
-                  new_interest_path(:product_id => product.id), :class => "want_this_link"
+          if current_user.type == "Buyer"
+            link_to "#{image_tag("want_this.png")} I want this!".html_safe,
+                    new_interest_path(:product_id => product.id), :class => "mybutton want_this_link"
+          elsif current_user.type == "Seller"
+            if stock = current_user.has_product?(product)
+              link_to "Edit price", edit_stock_path(stock), :class => "mybutton"
+            else
+              link_to "Sell this!", new_stock_path(:product_id => product.id), :class => "mybutton"
+            end
+          end
         end
       end
     end
@@ -36,7 +56,7 @@ ActiveAdmin.register Product do
         span do 
           link_to "#{image_tag("want_this.png")} I want this!".html_safe,
                   new_interest_path(:product_id => product.id), :class => "want_this_link"
-        end
+        end if can?(:create, Interest)
       end
       row :description
     end

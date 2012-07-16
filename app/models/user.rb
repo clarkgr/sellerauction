@@ -13,4 +13,8 @@ class User < ActiveRecord::Base
     self.type ||= "Buyer"
   end
   
+  def name_or_email
+    name.to_s.strip.blank? ? email : name
+  end
+  
 end

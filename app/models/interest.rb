@@ -18,6 +18,10 @@ class Interest < ActiveRecord::Base
     errors.add(:expires_at, "must be in the future") if expires_at.nil? || expires_at.past?
   end
   
+  def expired?
+    expires_at.past?
+  end
+  
   def won?
     current_price <= max_buying_price && expires_at.past?
   end
