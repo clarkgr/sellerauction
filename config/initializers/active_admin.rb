@@ -1,3 +1,48 @@
+module MetaSearch
+  class Builder
+
+    private
+
+    def build_join_dependency(relation)
+      buckets = relation.joins_values.group_by do |join|
+        case join
+        when String
+          'string_join'
+        when Hash, Symbol, Array
+          'association_join'
+        when ::ActiveRecord::Associations::JoinDependency::JoinAssociation
+          'stashed_join'
+        when Arel::Nodes::Join, Squeel::Nodes::Join, Squeel::Nodes::Stub
+          'join_node'
+        else
+          raise 'unknown class: %s' % join.class.name
+        end
+      end
+
+      association_joins         = buckets['association_join'] || []
+      stashed_association_joins = buckets['stashed_join'] || []
+      join_nodes                = buckets['join_node'] || []
+      string_joins              = (buckets['string_join'] || []).map { |x|
+        x.strip
+      }.uniq
+
+      join_list = relation.send :custom_join_ast, relation.table.from(relation.table), string_joins
+
+      join_dependency = ::ActiveRecord::Associations::JoinDependency.new(
+        relation.klass,
+        association_joins,
+        join_list
+      )
+
+      join_nodes.each do |join|
+        join_dependency.alias_tracker.aliased_name_for(join.left.name.downcase)
+      end
+
+      join_dependency.graft(*stashed_association_joins)
+    end
+  end
+end
+
 module ActiveAdmin
   module Devise
     class RegistrationsController < ::Devise::RegistrationsController

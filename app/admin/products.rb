@@ -27,14 +27,20 @@ ActiveAdmin.register Product do
         div :class => "name"  do link_to product.name, resource_path(product) end
       end
       div :class => "half_second_floater" do
-        div :class => "sellers" do
-          "Available by these sellers: #{product.sellers.map{ |n| link_to n.name, seller_path(n)}.join(", ")}".html_safe
-        end
-        div :class => "price" do
-          "From: #{number_to_currency product.min_price}"
+        if product.sellers.length.zero?
+          div :class => "price" do
+            "Out of stock"
+          end
+        else
+          div :class => "sellers" do
+            "Available by these sellers: #{product.sellers.map{ |n| link_to n.name, seller_path(n)}.join(", ")}".html_safe
+          end
+          div :class => "price" do
+            "From: #{number_to_currency product.min_price}"
+          end
         end
         div :class => "start" do
-          if current_user.type == "Buyer"
+          if current_user.type == "Buyer" && !product.sellers.length.zero?
             link_to "I want this!", new_interest_path(:product_id => product.id), :class => "mybutton want_this_link"
           elsif current_user.type == "Seller"
             if stock = current_user.has_product?(product)
@@ -92,7 +98,7 @@ ActiveAdmin.register Product do
     protected
     
     def scoped_collection
-      end_of_association_chain.accessible_by(current_ability).joins{ :sellers }.includes{ sellers }.group{ products.id }.
+      end_of_association_chain.accessible_by(current_ability).joins{ sellers.outer }.includes{ sellers }.group{ products.id }.
         select{ [products.id, products.name, products.image, min(stocks.price).as(min_price), max(stocks.price).as(max_price)]}
     end
   end

@@ -107,6 +107,7 @@ ActiveAdmin.register Interest do
     
     def new
       redirect_to products_url, :alert => "Select a product first!" and return if params[:product_id].blank?
+      redirect_to products_url, :alert => "This product is out of stock!" and return if Stock.find_all_by_product_id(params[:product_id]).blank?
       new! do
         resource.product_id = params[:product_id]
       end

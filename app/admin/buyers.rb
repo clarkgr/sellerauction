@@ -27,7 +27,7 @@ ActiveAdmin.register Buyer do
     load_and_authorize_resource :except => :index
     
     def index
-      redirect_to user_url(current_user)
+      redirect_to buyer_url(current_user)
     end
     
     def update
