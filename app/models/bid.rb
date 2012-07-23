@@ -5,6 +5,7 @@ class Bid < ActiveRecord::Base
   before_validation :check_if_seller_has_enough_stock
   before_validation :update_interest_current_price
   after_save        :update_interest_current_price
+  after_destroy     :update_interest_current_price
   
   belongs_to :interest
   belongs_to :seller
