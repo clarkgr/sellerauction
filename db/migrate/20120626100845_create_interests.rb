@@ -8,7 +8,6 @@ class CreateInterests < ActiveRecord::Migration
       t.decimal    :current_price   , :null => false, :precision => 10, :scale => 2
       t.decimal    :decrements      , :null => false, :default => 1, :precision => 10, :scale => 2
       t.integer    :quantity        , :null => false, :default => 1
-      t.references :order
       t.timestamps
     end
   end

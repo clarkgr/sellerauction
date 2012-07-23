@@ -7,7 +7,7 @@ class Interest < ActiveRecord::Base
   belongs_to :product
   belongs_to :user
   has_many   :bids, :dependent => :destroy
-  belongs_to :order
+  has_one    :order
   
   validates :product, :user, :max_buying_price, :expires_at, :presence => true
   validates :max_buying_price, :numericality => {:less_than => lambda { |x| x.product.min_available_price }}
