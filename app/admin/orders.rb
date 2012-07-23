@@ -10,10 +10,14 @@ ActiveAdmin.register Order do
     column :seller if current_user.type == "Buyer"
     column :product
     column :price do |order|
-      number_to_currency order.price
+      number_to_currency(order.price * order.interest.quantity)
     end
-    column :paid_at
-    column :shipped_at
+    column :paid_at do |order|
+      I18n.l(order.paid_at)
+    end
+    column :shipped_at do |order|
+      I18n.l(order.shipped_at)
+    end
     default_actions
   end
   
@@ -24,13 +28,29 @@ ActiveAdmin.register Order do
         row :seller
         row :product
         row :price do
-          number_to_currency resource.price
+          number_to_currency(resource.price * resource.interest.quantity)
         end
         row :paid_at do
           if resource.paid_at?
             I18n.l resource.paid_at
           else
-            link_to "Pay now!"
+            raw <<-FORM
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+            <input type="hidden" name="cmd" value="_xclick">
+            <input type="hidden" name="business" value="F9HQ3DTTGYJQU">
+            <input type="hidden" name="lc" value="GR">
+            <input type="hidden" name="item_name" value="#{resource.interest.product.name}">
+            <input type="hidden" name="amount" value="#{resource.price}">
+            <input type="hidden" name="quantity" value="#{resource.interest.quantity}">
+            <input type="hidden" name="currency_code" value="EUR">
+            <input type="hidden" name="button_subtype" value="services">
+            <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
+            <input type="hidden" name="return" value="#{resource_url(resource, :story => "success")}">
+            <input type="hidden" name="cancel_return" value="#{resource_url(resource, :story => "cancel")}">
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
+            FORM
           end
         end
         row :shipped_at
@@ -68,6 +88,17 @@ ActiveAdmin.register Order do
       new! do
         resource.interest_id = params[:interest_id]
         resource.price = resource.interest.current_price
+      end
+    end
+    
+    def show
+      show! do
+        if params[:story] == "success"
+          resource.update_attribute(:paid_at, Time.now.in_time_zone)
+          flash.now[:notice] = "Payment completed!"
+        elsif params[:story] == "cancel"
+          flash.now[:error] = "Payment canceled!"
+        end
       end
     end
     
