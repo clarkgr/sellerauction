@@ -1,3 +1,9 @@
+module ActiveAdmin
+  class Comment < ActiveRecord::Base
+    attr_accessible :resource_type, :resource_id, :body
+  end
+end
+
 module ActiveAdmin::Views::Pages
   class Base
     # Renders the content for the footer
