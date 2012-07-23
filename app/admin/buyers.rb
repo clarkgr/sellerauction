@@ -23,6 +23,16 @@ ActiveAdmin.register Buyer do
     f.buttons
   end
   
+  sidebar "Seller opportunity" do
+    h3 "Become a seller"
+    link_to "Apply to become a seller", seller_request_buyer_path(resource)
+  end
+  
+  member_action :seller_request do
+    resource.update_attribute :type, "Seller"    
+    redirect_to destroy_user_session_path, :notice => "Your request is complete. Please re-login."
+  end
+  
   controller do
     load_and_authorize_resource :except => :index
     

@@ -8,6 +8,9 @@ ActiveAdmin.register Stock do
   filter :updated_at
   
   index do
+    column do |stock|
+      image_tag stock.product.image_url(:thumb)
+    end
     column :product
     column :price
     column :quantity

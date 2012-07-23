@@ -5,9 +5,11 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :address
 
   before_create :select_type
+  
+  mount_uploader :avatar, ImageUploader
   
   def select_type
     self.type ||= "Buyer"

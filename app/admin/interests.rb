@@ -18,8 +18,12 @@ ActiveAdmin.register Interest do
   index do
     column :user if current_user.type == "Seller"
     column :product
-    column :max_buying_price
-    column :current_price
+    column :max_buying_price do |interest|
+      number_to_currency interest.max_buying_price
+    end
+    column :current_price do |interest|
+      number_to_currency interest.current_price
+    end
     column :expires_at
     column do |interest|
       if current_user.type == "Seller"
@@ -42,10 +46,16 @@ ActiveAdmin.register Interest do
     panel "Details" do
       attributes_table_for resource do
         row :expires_at
-        row :max_buying_price
-        row :decrements
+        row :max_buying_price do |interest|
+          number_to_currency interest.max_buying_price
+        end
+        row :decrements do |interest|
+          number_to_currency interest.decrements
+        end
         row :quantity
-        row :current_price
+        row :current_price do |interest|
+          number_to_currency interest.current_price
+        end
       end
     end
     panel "Bids" do
@@ -98,7 +108,9 @@ ActiveAdmin.register Interest do
   sidebar "Product details", :only => [:new, :show, :edit, :create, :update] do
     table_for resource.product.stocks.order(:price) do
       column :seller
-      column :price
+      column :price do |stock|
+        number_to_currency stock.price
+      end
     end
   end
 

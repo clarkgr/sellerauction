@@ -12,42 +12,45 @@ ActiveAdmin::Dashboards.build do
       end
     end
   end
-
-  # Define your dashboard sections here. Each block will be
-  # rendered on the dashboard in the context of the view. So just
-  # return the content which you would like to display.
   
-  # == Simple Dashboard Section
-  # Here is an example of a simple dashboard section
-  #
-  #   section "Recent Posts" do
-  #     ul do
-  #       Post.recent(5).collect do |post|
-  #         li link_to(post.title, admin_post_path(post))
-  #       end
-  #     end
-  #   end
+  section "Recent interests", :if => Proc.new { current_user.type == "Buyer" } do
+    table_for current_user.interests.order{ created_at.desc } do
+      column :product do |interest|
+        span( image_tag(interest.product.image_url(:thumb), :style => "vertical-align:middle") + interest.product.name)
+      end
+      column :current_price do |interest|
+        number_to_currency interest.current_price
+      end
+      column :expires_at do |interest|
+        div I18n.l(interest.expires_at, :format => '%Y-%m-%d %H:%M')
+        div do
+          if interest.expired?
+            "Expired"
+          else
+            "Expires in #{time_ago_in_words(interest.expires_at)}"
+          end
+        end
+      end
+      column do |interest|
+        link_to "Details", interest
+      end
+    end
+  end
   
-  # == Render Partial Section
-  # The block is rendered within the context of the view, so you can
-  # easily render a partial rather than build content in ruby.
-  #
-  #   section "Recent Posts" do
-  #     div do
-  #       render 'recent_posts' # => this will render /app/views/admin/dashboard/_recent_posts.html.erb
-  #     end
-  #   end
-  
-  # == Section Ordering
-  # The dashboard sections are ordered by a given priority from top left to
-  # bottom right. The default priority is 10. By giving a section numerically lower
-  # priority it will be sorted higher. For example:
-  #
-  #   section "Recent Posts", :priority => 10
-  #   section "Recent User", :priority => 1
-  #
-  # Will render the "Recent Users" then the "Recent Posts" sections on the dashboard.
-  
+  section "Recent orders" do
+    table_for current_user.orders.order{ created_at.desc } do
+      column :product
+      column :user if current_user.type == "Seller"
+      column :price do |order|
+        number_to_currency order.price
+      end
+      column :paid_at
+      column :shipped_at
+      column do |order|
+        link_to "Details", order
+      end
+    end
+  end
   # == Conditionally Display
   # Provide a method name or Proc object to conditionally render a section at run time.
   #

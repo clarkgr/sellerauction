@@ -5,19 +5,19 @@ ActiveAdmin.register Seller do
   
   index :as => :grid do |seller|
     div :class => "grid_seller" do
-      div :class => "half_first_floater" do
-        # div :class => "image" do image_tag seller.image_url(:thumb) end
+      div :class => "" do
+        div :class => "image" do image_tag seller.avatar_url(:thumb) end
         div :class => "name"  do link_to seller.name, can?(:update, seller) ? edit_resource_path(seller) : resource_path(seller) end
+        div :class => "address"  do seller.address end
       end
     end
   end
   
   show do
-    panel resource.name
-    div :class => "seller_page" do
-      div :class => "logo" do
-        image_tag resource.logo rescue nil
-      end
+    panel resource.name do
+      div :class => "image" do image_tag seller.avatar_url(:thumb) end
+      div :class => "name"  do link_to seller.name, can?(:update, seller) ? edit_resource_path(seller) : resource_path(seller) end
+      div :class => "address"  do seller.address end
     end
   end
   
@@ -26,6 +26,10 @@ ActiveAdmin.register Seller do
       f.input :name
       f.input :password
       f.input :password_confirmation
+    end
+    f.inputs "Logo and address" do
+      f.input :avatar, :label => "Logo"
+      f.input :address
     end
     f.buttons
   end

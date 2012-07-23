@@ -70,7 +70,9 @@ ActiveAdmin.register Product do
     end
     table_for resource.stocks.order(:price) do
       column :seller
-      column :price
+      column :price do |stock|
+        number_to_currency stock.price
+      end
     end
   end
   

@@ -5,15 +5,17 @@ ActiveAdmin.register Bid do
   index do
     column :product
     column :user
-    column :min_price
+    column :min_price do |bid|
+      number_to_currency bid.min_price
+    end
     column :current_price do |bid|
-      bid.interest.current_price
+      number_to_currency bid.interest.current_price
     end
     column :winning? do |bid|
       status_tag bid.winning? ? "YES" : "NO", bid.winning? ? "ok" : "error"
     end
     column :originally_sold do |bid|
-      bid.interest.product.price_for(current_user)
+      number_to_currency bid.interest.product.price_for(current_user)
     end
     column do |bid|
       link_to "Details", resource_path(bid)
@@ -32,7 +34,7 @@ ActiveAdmin.register Bid do
       end
       div :class => "bid_status", :style => "color: black;margin-bottom:10px;" do
         bid.expired? ? "This bid expired" :
-          "This bid expires in #{time_ago_in_words(bid.expires_at)} (#{I18n.l bid.expires_at, :format => '%Y-%m-%d %H:%M'})"
+          "This bid expires in #{time_ago_in_words(bid.expires_at.utc)} (#{I18n.l bid.expires_at.utc, :format => '%Y-%m-%d %H:%M'})" 
       end
       div :class => "bid_status" do
         if bid.expired?
@@ -73,9 +75,11 @@ ActiveAdmin.register Bid do
   
   sidebar "Bids", :only => [:show, :new, :edit, :create, :update] do
     attributes_table_for resource.interest do
-      row :current_price
+      row :current_price do
+        number_to_currency resource.interest.current_price
+      end
       row :buyer_max_buying_price do
-        resource.interest.max_buying_price
+        number_to_currency resource.interest.max_buying_price
       end
       row :total_bidders do
         resource.interest.bids.count

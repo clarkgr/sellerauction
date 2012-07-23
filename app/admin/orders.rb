@@ -9,7 +9,9 @@ ActiveAdmin.register Order do
     column :user if current_user.type == "Seller"
     column :seller if current_user.type == "Buyer"
     column :product
-    column :price
+    column :price do |order|
+      number_to_currency order.price
+    end
     column :paid_at
     column :shipped_at
     default_actions
@@ -21,7 +23,9 @@ ActiveAdmin.register Order do
         row :user
         row :seller
         row :product
-        row :price
+        row :price do
+          number_to_currency resource.price
+        end
         row :paid_at do
           if resource.paid_at?
             I18n.l resource.paid_at
@@ -47,7 +51,9 @@ ActiveAdmin.register Order do
   sidebar "Actual prices", :only => [:new, :show, :edit, :create, :update] do
     table_for resource.product.stocks.order(:price) do
       column :seller
-      column :price
+      column :price do |order|
+        number_to_currency order.price
+      end
       column "You saved" do |stock|
         number_to_percentage resource.interest.current_price / stock.price * 100, :precision => 0
       end

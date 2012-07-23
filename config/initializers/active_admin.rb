@@ -1,3 +1,12 @@
+module ActiveAdmin::Views::Pages
+  class Base
+    # Renders the content for the footer
+    def build_footer
+      "Seller Auction"
+    end
+  end
+end
+  
 module MetaSearch
   class Builder
 

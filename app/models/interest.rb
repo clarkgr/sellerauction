@@ -1,6 +1,7 @@
 class Interest < ActiveRecord::Base
   attr_accessible :product_id, :max_buying_price, :decrements, :quantity, :expires_at
   
+  before_save :freeze_if_expired
   before_save :update_current_price
   
   belongs_to :product
@@ -34,6 +35,10 @@ class Interest < ActiveRecord::Base
     end
   end
   
+  def freeze_if_expired
+    return false if expired?
+  end
+  
   def update_current_price
     ibids = bids.order(:min_price).all
     self.current_price = if ibids.length == 0
@@ -44,6 +49,7 @@ class Interest < ActiveRecord::Base
       best_price = [ibids[1].min_price - decrements, ibids[0].min_price].max
       best_price <= max_buying_price ? best_price : product.min_available_price
     end
+    true
   end
   
 end
