@@ -24,7 +24,16 @@ ActiveAdmin.register Interest do
     column :current_price do |interest|
       number_to_currency interest.current_price
     end
-    column :expires_at
+    column :expires_at do |interest|
+      div I18n.l(interest.expires_at, :format => '%Y-%m-%d %H:%M')
+      div do
+        if interest.expired?
+          "Expired"
+        else
+          "Expires in #{time_ago_in_words(interest.expires_at)}"
+        end
+      end
+    end
     column do |interest|
       if current_user.type == "Seller"
         bid = current_user.bids.where{interest_id == my{interest.id}}.first
