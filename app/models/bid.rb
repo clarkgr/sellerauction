@@ -17,7 +17,7 @@ class Bid < ActiveRecord::Base
   delegate :expires_at, :expired?, :to => :interest
   
   def update_interest_current_price
-    interest.save!
+    interest.save
     true
   end
   
