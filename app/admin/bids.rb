@@ -54,7 +54,7 @@ ActiveAdmin.register Bid do
     end
     panel "Order details" do
       if resource.interest.order
-        link_to "Go to order", resource_path(resource.interest.order)
+        link_to "Go to order", order_path(resource.interest.order)
       else
         if current_user.type == "Buyer"
           link_to "Place order", new_order_path(:interest_id => resource.interest)
