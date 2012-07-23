@@ -13,10 +13,10 @@ ActiveAdmin.register Order do
       number_to_currency(order.price * order.interest.quantity)
     end
     column :paid_at do |order|
-      I18n.l(order.paid_at)
+      I18n.l(order.paid_at) if order.paid_at
     end
     column :shipped_at do |order|
-      I18n.l(order.shipped_at)
+      I18n.l(order.shipped_at) if order.shipped_at
     end
     default_actions
   end
