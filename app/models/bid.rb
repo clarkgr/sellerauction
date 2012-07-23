@@ -27,8 +27,10 @@ class Bid < ActiveRecord::Base
   end
   
   def check_if_interest_expired
-    errors.add :base, "This interest has expired!" if interest.expired?
-    return false
+    if interest.expired?
+      errors.add :base, "This interest has expired!" 
+      return false
+    end
   end
   
   def check_if_seller_has_enough_stock
