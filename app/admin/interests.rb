@@ -17,6 +17,9 @@ ActiveAdmin.register Interest do
   
   index do
     column :user if current_user.type == "Seller"
+    column do |interest|
+      image_tag interest.product.image_url(:thumb)
+    end
     column :product
     column :max_buying_price do |interest|
       number_to_currency interest.max_buying_price
