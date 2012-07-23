@@ -6,7 +6,7 @@ class Interest < ActiveRecord::Base
   
   belongs_to :product
   belongs_to :user
-  has_many   :bids
+  has_many   :bids, :dependent => :destroy
   belongs_to :order
   
   validates :product, :user, :max_buying_price, :expires_at, :presence => true
