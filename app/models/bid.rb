@@ -1,6 +1,7 @@
 class Bid < ActiveRecord::Base
   attr_accessible :interest_id, :min_price, :seller_id
   
+  before_validation :check_if_interest_expired
   before_validation :check_if_seller_has_enough_stock
   before_validation :update_interest_current_price
   after_save        :update_interest_current_price
@@ -23,6 +24,10 @@ class Bid < ActiveRecord::Base
   
   def winning?
     min_price <= interest.current_price
+  end
+  
+  def check_if_interest_expired
+    errors.add :base, "This interest has expired!" if interest.expired?
   end
   
   def check_if_seller_has_enough_stock
