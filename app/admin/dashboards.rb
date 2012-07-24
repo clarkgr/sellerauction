@@ -37,7 +37,7 @@ ActiveAdmin::Dashboards.build do
     end
   end
   
-  section "Recent orders" do
+  section "Recent orders", :if => Proc.new { !current_user.type.blank? } do
     table_for current_user.orders.order{ created_at.desc } do
       column :product
       column :user if current_user.type == "Seller"
